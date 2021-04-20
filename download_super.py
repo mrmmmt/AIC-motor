@@ -3,7 +3,7 @@ from frozen_dir import app_path
 import os
 import pandas as pd
 import time
-from tkinter import Tk, messagebox, Label, StringVar, Button, ttk, scrolledtext, END
+from tkinter import END, Tk, Label, StringVar, Button, ttk, scrolledtext, messagebox
 # from create_pretty import create_pretty_result
 import shutil
 import threading

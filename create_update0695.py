@@ -6,7 +6,7 @@ from get_info_from_IDcard import get_info_from_IDcard
 import xlrd
 import xlutils.copy
 from frozen_dir import app_path
-from tkinter import Tk, messagebox, Label, StringVar, Button, ttk
+from tkinter import Tk, Label, StringVar, Button, ttk, messagebox
 from simple_province import simple_province2whole
 import area2province
 
