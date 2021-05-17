@@ -6,7 +6,7 @@ from get_info_from_IDcard import get_info_from_IDcard
 import xlrd
 import xlutils.copy
 from frozen_dir import app_path
-from tkinter import Tk, Label, StringVar, Button, ttk, messagebox
+from tkinter import CENTER, Tk, Label, StringVar, Button, ttk, messagebox
 from simple_province import simple_province2whole
 import area2province
 
@@ -98,6 +98,7 @@ def create_merge_df(local_raw_df, plywrite_file_name):
 
 
 def create_result_df(df_merge, columns_pkl_nme): 
+    global three_wheel_alert_flag
     with open(columns_pkl_nme, 'rb') as f:
         need_columns = pickle.load(f)
 
@@ -106,10 +107,11 @@ def create_result_df(df_merge, columns_pkl_nme):
     df_check_2_or_3 = df_merge.loc[:, ['车架号', '车型名称']]
     df_check_2_or_3['类型'] = ['三轮' if '三轮' in x else '二轮' for x in list(df_check_2_or_3['车型名称'])]
     df_check_2_or_3 = df_check_2_or_3[df_check_2_or_3['类型']=='三轮']
-    if df_check_2_or_3.shape[0] > 0:
+    if df_check_2_or_3.shape[0] > 0 and three_wheel_alert_flag == 0:
         df_check_2_or_3.to_excel(app_path()+'/三轮_{}.xlsx'.format(datetime.now().strftime('%Y%m%d')), index=None)
         info = '车架号 {} 为三轮车型，请核实！'.format(list(df_check_2_or_3['车架号']))
-        messagebox.showinfo('提示', info)   
+        messagebox.showinfo('提示', info)
+        three_wheel_alert_flag = 1
 
     with open(app_path() + '/bin/data/temp_0366_{}.pkl'.format(datetime.now().strftime('%Y%m%d')), 'wb') as f:
         pickle.dump(df_merge, f)
@@ -140,13 +142,14 @@ def create_result_df(df_merge, columns_pkl_nme):
     return df
 
 
-def create_output(individual_local_df_name, company_local_df_name, plywrite_file_name, columns_pkl_nme, save_name):
+def create_output(individual_local_df_name, company_local_df_name, plywrite_file_name, columns_pkl_nme, save_name, area_list):
     #指定原始excel路径
     filepath = app_path() + '/bin/data/model_EIZ_AIC_01.xls'
     
     local_raw_df = create_local_raw_df(individual_local_df_name, company_local_df_name)
     df_merge = create_merge_df(local_raw_df, plywrite_file_name)
     df = create_result_df(df_merge, columns_pkl_nme)
+    df = df[df['K'].isin(area_list)]
 
     df.columns = list(range(df.shape[1]))
     df.index = list(range(df.shape[0]))
@@ -172,10 +175,17 @@ def create_0695update_main():
         individual_local_df_name = app_path() + '/' + var_individual_local_df_name.get()
         company_local_df_name = app_path() + '/' + var_company_local_df_name.get()
         plywrite_file_name = app_path() + '/' + var_plywrite_file_name.get()
-        save_name = app_path() + '/0695批量导入/' + '导入数据{}.xls'.format(datetime.now().strftime('%Y%m%d%H%M'))
         columns_pkl_nme = app_path() + '/bin/data/columns.pkl'
-        create_output(individual_local_df_name, company_local_df_name, plywrite_file_name, columns_pkl_nme, save_name)
-        info = '保存路径:\n' + save_name
+        with open(app_path()+'/bin/data/tax_info.pkl', 'rb') as f:
+            tax_dict = pickle.load(f)
+        info = '保存路径：\n'
+        for flag in range(1, 10):
+            area_list = tax_dict['area_{}'.format(flag)]
+            if len(area_list) > 0:
+                save_name = app_path() + '/0695批量导入/' + '导入数据{0}_{1}.xls'.format(datetime.now().strftime('%Y%m%d%H%M'), str(flag).zfill(2))
+                create_output(individual_local_df_name, company_local_df_name, plywrite_file_name, columns_pkl_nme, save_name, area_list)
+                info += save_name + '\n'
+        info = info.strip()
         messagebox.showinfo('处理成功!', info)
     except Exception as e:
         info = '错误原因：' + str(e)
@@ -183,28 +193,29 @@ def create_0695update_main():
 
 
 def create_0695update_gui():
-    global window_0695update, var_individual_local_df_name, var_company_local_df_name, var_plywrite_file_name
+    global window_0695update, var_individual_local_df_name, var_company_local_df_name, var_plywrite_file_name, three_wheel_alert_flag
 
     if not os.path.exists(app_path() + '/0695批量导入'):
         os.makedirs(app_path() + '/0695批量导入')
 
+    three_wheel_alert_flag = 0
     window_0695update = Tk()
     window_0695update.title('摩托车0695批量导入数据处理')
     window_0695update.resizable(0, 0)  # 设置窗口宽高固定
     window_0695update.iconbitmap(app_path() + '/bin/aic_logo.ico')
     screenWidth = window_0695update.winfo_screenwidth()  # 获取显示区域的宽度
     screenHeight = window_0695update.winfo_screenheight()  # 获取显示区域的高度
-    width = 555  # 设定窗口宽度
+    width = 460  # 设定窗口宽度
     height = 180  # 设定窗口高度
     left = int((screenWidth - width) / 2)
     top = int((screenHeight - height) / 2)-100
     window_0695update.geometry('{width}x{height}+{left}+{top}'.format(width=width, height=height, left=left, top=top))
-    Label(window_0695update, text='个人投保记录文件（平台）:', font=('Msyh', 12)).place(x=30, y=19)
-    Label(window_0695update, text='公户投保记录文件（平台）:', font=('Msyh', 12)).place(x=30, y=55)
-    Label(window_0695update, text='当日出单台账  （新核心）:', font=('Msyh', 12)).place(x=30, y=91)
+    Label(window_0695update, text='个人投保记录文件（平台）:').place(x=30, y=20)
+    Label(window_0695update, text='公户投保记录文件（平台）:').place(x=30, y=50)
+    Label(window_0695update, text='当日出单台账  （新核心）:').place(x=30, y=80)
     # 个人投保记录文件（平台）
     var_individual_local_df_name = StringVar()
-    comboxlist = ttk.Combobox(window_0695update, width=30, textvariable=var_individual_local_df_name, font=('Msyh', 12))
+    comboxlist = ttk.Combobox(window_0695update, width=30, textvariable=var_individual_local_df_name, justify=CENTER)
     list_value = [item for item in os.listdir(app_path()) if item.split('.')[-1] in ['xls', 'xlsx']]
     list_value.sort(reverse=True)
     list_value.insert(0, '------------None------------')
@@ -217,11 +228,11 @@ def create_0695update_gui():
     except:
         comboxlist.current(0)
 
-    comboxlist.place(x=250,y=20)
+    comboxlist.place(x=190,y=22)
 
     # 公户投保记录文件（平台）
     var_company_local_df_name = StringVar()
-    comboxlist_2 = ttk.Combobox(window_0695update, width=30, textvariable=var_company_local_df_name, font=('Msyh', 12))
+    comboxlist_2 = ttk.Combobox(window_0695update, width=30, textvariable=var_company_local_df_name, justify=CENTER)
     list_value_2 = [item for item in os.listdir(app_path()) if item.split('.')[-1] in ['xls', 'xlsx']]
     list_value_2.sort(reverse=True)
     list_value_2.insert(0, '------------None------------')
@@ -234,11 +245,11 @@ def create_0695update_gui():
     except:
         comboxlist_2.current(0)
 
-    comboxlist_2.place(x=250,y=56)
+    comboxlist_2.place(x=190,y=52)
 
     # 车险核心调出表
     var_plywrite_file_name = StringVar()
-    comboxlist_3 = ttk.Combobox(window_0695update, width=30, textvariable=var_plywrite_file_name, font=('Msyh', 12))
+    comboxlist_3 = ttk.Combobox(window_0695update, width=30, textvariable=var_plywrite_file_name, justify=CENTER)
     list_value_3 = [item for item in os.listdir(app_path()) if item.split('.')[-1] in ['xls', 'xlsx']]
     list_value_3.sort(reverse=True)
     comboxlist_3["values"] = list_value_3
@@ -250,11 +261,11 @@ def create_0695update_gui():
     except:
         pass
 
-    comboxlist_3.place(x=250,y=92)
+    comboxlist_3.place(x=190,y=82)
 
     # 开始处理 按钮
     btn_start = Button(window_0695update, text='开始处理', command=create_0695update_main)
-    btn_start.place(x=245, y=130)
+    btn_start.place(x=200, y=130)
 
     # 主窗口循环显示
     window_0695update.mainloop()

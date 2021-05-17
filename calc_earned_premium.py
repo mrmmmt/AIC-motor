@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from frozen_dir import app_path
 from datetime import datetime, timedelta
-from tkinter import Tk, Label, StringVar, Button, ttk, scrolledtext, END
+from tkinter import END, CENTER, Tk, Label, StringVar, Button, ttk, scrolledtext
 
 
 def print_result(total_sheet_name, selected_date):
@@ -109,16 +109,16 @@ def calc_earned_premium():
     window_earned_premium.iconbitmap(app_path() + '/bin/aic_logo.ico')
     screenWidth = window_earned_premium.winfo_screenwidth()  # 获取显示区域的宽度
     screenHeight = window_earned_premium.winfo_screenheight()  # 获取显示区域的高度
-    width = 400  # 设定窗口宽度
+    width = 350  # 设定窗口宽度
     height = 150  # 设定窗口高度
     left = int((screenWidth - width) / 2)
     top = int((screenHeight - height) / 2)-100
     window_earned_premium.geometry('{width}x{height}+{left}+{top}'.format(width=width, height=height, left=left, top=top))
-    Label(window_earned_premium, text='摩托车汇总表:', font=('Msyh', 12)).place(x=20, y=19)
-    Label(window_earned_premium, text='截止日期:', font=('Msyh', 12)).place(x=20, y=55)
+    Label(window_earned_premium, text='摩托车汇总表：').place(x=20, y=19)
+    Label(window_earned_premium, text='截止日期：').place(x=20, y=55)
 
     var_total_sheet_nme = StringVar()
-    comboxlist = ttk.Combobox(window_earned_premium, width=25, textvariable=var_total_sheet_nme, font=('Msyh', 12))
+    comboxlist = ttk.Combobox(window_earned_premium, width=25, textvariable=var_total_sheet_nme, justify=CENTER)
     list_value = [item for item in os.listdir(app_path() + '/汇总表/') if item.split('.')[-1] == 'xlsx']
     list_value.sort(reverse=True)
     comboxlist["values"] = list_value
@@ -126,17 +126,17 @@ def calc_earned_premium():
         comboxlist.current(0)
     except:
         pass
-    comboxlist.place(x=150,y=20)
+    comboxlist.place(x=120,y=20)
 
     var_cur_date = StringVar()
-    comboxlist_2 = ttk.Combobox(window_earned_premium, width=25, textvariable=var_cur_date, font=('Msyh', 12))
+    comboxlist_2 = ttk.Combobox(window_earned_premium, width=25, textvariable=var_cur_date, justify=CENTER)
     list_value_2 = [datetime.now().strftime('%Y-%m-%d'), (datetime.now()-timedelta(days=1)).strftime('%Y-%m-%d'), (datetime.now()-timedelta(days=2)).strftime('%Y-%m-%d'), (datetime.now()-timedelta(days=3)).strftime('%Y-%m-%d'), (datetime.now()-timedelta(days=4)).strftime('%Y-%m-%d'), (datetime.now()-timedelta(days=5)).strftime('%Y-%m-%d')]
     comboxlist_2["values"] = list_value_2
     comboxlist_2.current(0)
-    comboxlist_2.place(x=150,y=56)
+    comboxlist_2.place(x=120,y=56)
 
     btn_start = Button(window_earned_premium, text='开始计算', command=print_result_gui)
-    btn_start.place(x=165, y=100)
+    btn_start.place(x=145, y=100)
 
     window_earned_premium.mainloop()
 

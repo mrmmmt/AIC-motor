@@ -34,6 +34,11 @@ def app_path():
 
 ## 版本
 
+### v 2.0 (Build 20210517) 
+
+- 投保单号和意健险保额修改增加至9个
+- UI优化
+
 ### v 1.61 (Build 20210419) 
 
 - 自动生成驾乘人员意外伤害保险的批量导入模板 [`create_update0695.py`](https://github.com/mrmmmt/AIC-motor/blob/master/create_update0695.py)

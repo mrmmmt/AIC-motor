@@ -3,8 +3,7 @@ from frozen_dir import app_path
 import os
 import pandas as pd
 import time
-from tkinter import END, Tk, Label, StringVar, Button, ttk, scrolledtext, messagebox
-# from create_pretty import create_pretty_result
+from tkinter import END, CENTER, Tk, Label, StringVar, Button, ttk, scrolledtext, messagebox
 import shutil
 import threading
 import queue
@@ -88,7 +87,7 @@ class Download_Policy:
         self.window_choose_file = Tk()
         screenWidth = self.window_choose_file.winfo_screenwidth()  # 获取显示区域的宽度
         screenHeight = self.window_choose_file.winfo_screenheight()  # 获取显示区域的高度
-        width = 283  # 设定窗口宽度
+        width = 253  # 设定窗口宽度
         height = 80  # 设定窗口高度
         left = int((screenWidth - width) / 2)
         top = int((screenHeight - height) / 2)-100
@@ -97,7 +96,7 @@ class Download_Policy:
         self.window_choose_file.iconbitmap(app_path() + '/bin/aic_logo.ico')
         self.window_choose_file.geometry('{width}x{height}+{left}+{top}'.format(width=width, height=height, left=left, top=top))  # 设定窗口的大小及位置
         self.var_total_sheet_name = StringVar()
-        comboxlist = ttk.Combobox(self.window_choose_file, width=30, textvariable=self.var_total_sheet_name, font=('Msyh', 12))
+        comboxlist = ttk.Combobox(self.window_choose_file, width=30, textvariable=self.var_total_sheet_name, justify=CENTER)
         list_value = [item for item in os.listdir(app_path() + '/汇总表/') if item.split('.')[-1] == 'xlsx']
         list_value.sort(reverse=True)
         comboxlist['values'] = list_value
@@ -107,7 +106,7 @@ class Download_Policy:
             pass
 
         comboxlist.place(x=10, y=13)
-        Button(self.window_choose_file, text='确定', width=15, command=self.choose_date_window).place(x=80,y=42)
+        Button(self.window_choose_file, text='确定', width=10, command=self.choose_date_window).place(x=85,y=42)
         self.window_choose_file.mainloop()
 
 
@@ -124,7 +123,7 @@ class Download_Policy:
         self.window_choose_date = Tk()
         screenWidth = self.window_choose_date.winfo_screenwidth()  # 获取显示区域的宽度
         screenHeight = self.window_choose_date.winfo_screenheight()  # 获取显示区域的高度
-        width = 283  # 设定窗口宽度
+        width = 255  # 设定窗口宽度
         height = 80  # 设定窗口高度
         left = int((screenWidth - width) / 2)
         top = int((screenHeight - height) / 2)-100
@@ -133,7 +132,7 @@ class Download_Policy:
         self.window_choose_date.iconbitmap(app_path() + '/bin/aic_logo.ico')
         self.window_choose_date.geometry('{width}x{height}+{left}+{top}'.format(width=width, height=height, left=left, top=top))
         self.var_date_name = StringVar()
-        comboxlist = ttk.Combobox(self.window_choose_date, width=30, textvariable=self.var_date_name, font=('Msyh', 12))
+        comboxlist = ttk.Combobox(self.window_choose_date, width=30, textvariable=self.var_date_name, justify=CENTER)
         comboxlist["values"] = unique_date
         try:
             comboxlist.current(0)
@@ -141,7 +140,7 @@ class Download_Policy:
             pass
 
         comboxlist.place(x=10,y=13)
-        Button(self.window_choose_date, text='确定', width=15, command=self.download_info_window).place(x=80, y=42)
+        Button(self.window_choose_date, text='确定', width=10, command=self.download_info_window).place(x=85, y=42)
         self.window_choose_date.mainloop()
 
 

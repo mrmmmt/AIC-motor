@@ -3,11 +3,16 @@ import create_update0695, create_total_sheet_super
 import download_super
 from calc_earned_premium import calc_earned_premium
 from change_policy_number import change_policy_number_gui
-from change_tax import change_tax_gui
-from tkinter import Tk, messagebox, Label, StringVar, Button, PhotoImage, Radiobutton, Menu
+from change_tax import ChangeTax
+from tkinter import Tk, Label, StringVar, Button, PhotoImage, Radiobutton, Menu, messagebox
 from frozen_dir import app_path
 import sys
 import os
+
+
+def about():
+    about_info = '版本 2.0\nBuild 20210517\nmrmmmt_ 制作\nE-mail：mmmt123321@126.com'
+    messagebox.showinfo('关于', about_info)
 
 
 def close_the_window():
@@ -59,11 +64,11 @@ if __name__ == '__main__':
         window_root["background"] = "white"
         logo_image_file = PhotoImage(file=app_path()+'/bin/background.png')
         Label(window_root, image=logo_image_file).pack()
-        Label(window_root, text='版本 1.6', font=('Msyh', 8)).place(x=245, y=180)
+        Button(window_root, text='关于', bg='white', bd=0, font=('Msyh', 8), command=about).place(x=270, y=180)
         var_option_select = StringVar()
-        Radiobutton(window_root, text='0695批量导入数据生成', bg='white', variable=var_option_select, value='Option_1', font=('Msyh', 11)).place(x=60, y=60)
-        Radiobutton(window_root, text='截止每日汇总表生成', bg='white', variable=var_option_select, value='Option_2', font=('Msyh', 11)).place(x=60, y=85)
-        Radiobutton(window_root, text='电子保单批量下载', bg='white', variable=var_option_select, value='Option_3', font=('Msyh', 11)).place(x=60, y=110)
+        Radiobutton(window_root, text='0695批量导入数据生成', bg='white', variable=var_option_select, value='Option_1').place(x=70, y=60)
+        Radiobutton(window_root, text='截止每日汇总表生成', bg='white', variable=var_option_select, value='Option_2').place(x=70, y=85)
+        Radiobutton(window_root, text='电子保单批量下载', bg='white', variable=var_option_select, value='Option_3').place(x=70, y=110)
         Button(window_root, text='确定', bg='white', width=15, command=close_the_window).place(x=93, y=155)
 
         ## 菜单栏
@@ -91,5 +96,5 @@ if __name__ == '__main__':
         elif selected_menu_option == '0695投保单号修改':
             change_policy_number_gui()
         elif selected_menu_option == '0695保费（税）修改':
-            change_tax_gui()
+            ChangeTax()
             
