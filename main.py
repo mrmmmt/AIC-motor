@@ -11,7 +11,7 @@ import os
 
 
 def about():
-    about_info = '版本 2.0\nBuild 20210517\nmrmmmt_ 制作\nE-mail：mmmt123321@126.com'
+    about_info = '版本 2.01\nBuild 20210520\nmrmmmt_ 制作\nE-mail：mmmt123321@126.com'
     messagebox.showinfo('关于', about_info)
 
 
