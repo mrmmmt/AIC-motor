@@ -150,6 +150,7 @@ def create_output(individual_local_df_name, company_local_df_name, plywrite_file
     df_merge = create_merge_df(local_raw_df, plywrite_file_name)
     df = create_result_df(df_merge, columns_pkl_nme)
     df = df[df['K'].isin(area_list)]
+    df['A']  = [str(int(x)) for x in range(1, df.shape[0]+1)]  # 序号
 
     df.columns = list(range(df.shape[1]))
     df.index = list(range(df.shape[0]))
