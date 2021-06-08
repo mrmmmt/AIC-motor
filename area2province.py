@@ -37,23 +37,11 @@ def create_province_dict():
 
 def get_province_from_info(area_info):
     province_dict = create_province_dict()
-    return_info = None
     for province in province_dict.keys():
         if province in area_info:
-            return_info = province
-            break
-    if return_info is None:
-        for province in province_dict.keys():
-            for city in province_dict[province]:
-                if city in area_info:
-                    return_info = province
-                    break
-            if return_info is not None:
-                break
-        if return_info is None:
-            return area_info
-        else:
-            return return_info
-
-    else:
-        return return_info
+            return province
+    for province in province_dict.keys():
+        for city in province_dict[province]:
+            if city in area_info:
+                return province
+    return area_info
